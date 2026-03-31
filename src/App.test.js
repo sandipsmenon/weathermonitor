@@ -76,8 +76,10 @@ describe('Form validation', () => {
 
   test('shows error for city name that is too long', async () => {
     render(<App />);
-    const longCity = 'a'.repeat(101);
-    await userEvent.type(screen.getByPlaceholderText('City...'), longCity);
+    // Use fireEvent.change to bypass the DOM maxLength constraint and test the JS validation
+    fireEvent.change(screen.getByPlaceholderText('City...'), {
+      target: { value: 'a'.repeat(101) },
+    });
     await userEvent.type(screen.getByPlaceholderText('Country code...'), 'US');
     const form = screen.getByRole('button', { name: /get weather/i }).closest('form');
     fireEvent.submit(form);
@@ -193,6 +195,7 @@ describe('API interaction', () => {
   });
 
   test('shows missing API key error when env var is not set', async () => {
+    const original = process.env.REACT_APP_WEATHER_API_KEY;
     delete process.env.REACT_APP_WEATHER_API_KEY;
 
     render(<App />);
@@ -203,5 +206,7 @@ describe('API interaction', () => {
     await waitFor(() => {
       expect(screen.getByRole('alert')).toHaveTextContent('API key is not configured');
     });
+
+    process.env.REACT_APP_WEATHER_API_KEY = original;
   });
 });

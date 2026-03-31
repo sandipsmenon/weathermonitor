@@ -4,7 +4,6 @@ import Titles from "./components/Titles";
 import Form from "./components/Form";
 import Weather from "./components/Weather";
 
-const API_KEY = process.env.REACT_APP_WEATHER_API_KEY;
 const API_BASE_URL = "https://api.openweathermap.org/data/2.5/weather";
 
 const CITY_PATTERN = /^[a-zA-Z\s\-'.]+$/;
@@ -63,7 +62,8 @@ function App() {
       return;
     }
 
-    if (!API_KEY) {
+    const apiKey = process.env.REACT_APP_WEATHER_API_KEY;
+    if (!apiKey) {
       setError("API key is not configured. Please set REACT_APP_WEATHER_API_KEY.");
       return;
     }
@@ -81,7 +81,7 @@ function App() {
     });
 
     try {
-      const url = `${API_BASE_URL}?q=${encodeURIComponent(city)},${encodeURIComponent(country)}&appid=${encodeURIComponent(API_KEY)}&units=metric`;
+      const url = `${API_BASE_URL}?q=${encodeURIComponent(city)},${encodeURIComponent(country)}&appid=${encodeURIComponent(apiKey)}&units=metric`;
       const response = await fetch(url);
       const data = await response.json();
 
